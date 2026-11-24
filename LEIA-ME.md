@@ -20,12 +20,12 @@ Todo o texto está em `index.html`, na lista `S`. Cada trecho é `b('português'
 `class="frag"` aparece só quando você avança. As animações são GIFs de `media/`, copiados de
 `../animacoes/saida/`: se regenerar uma animação, copie o novo GIF para `media/`.
 
-## Estrutura (23 slides)
+## Estrutura (24 slides)
 1 capa · 2 a tese · 3–5 regras exatas (Newton, gás) · 6–8 regras simples (autômatos; o 8 mostra autômatos na ciência:
 ondas no coração, trânsito, incêndios florestais) · 9–11 o acaso entra (DLA, epidemia) · **12–13 percolação e transição de fase** (nasce da epidemia e dos incêndios: "existe um
 caminho?"; o limiar, o efeito do tamanho, a transição de fase e a ponte para o Monte Carlo) ·
 14–20 Monte Carlo (Los Alamos, π histórico, agulha de Buffon, dardos, **19 do π ao Monte Carlo de verdade: amostragem por
-importância / cadeia de Markov**, Galton) · 21 muitos graus de liberdade (o resumo do problema) · 22 a tese de novo · 23 fim.
+importância / cadeia de Markov**, Galton, **21 cadeia de Markov num sistema de spins: Potts q=10, GIF de `../../figuras/fig14_anim_potts.py`**) · 22 muitos graus de liberdade (o resumo do problema) · 23 a tese de novo · 24 fim.
 
 ## Pendente de verificação
 O slide 16 ("π ao acaso, antes dos computadores") traz só fatos conferidos (Buffon, Lazzarini). A ideia de que
