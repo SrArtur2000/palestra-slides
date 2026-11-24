@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Como a Estatística Vê o Mundo</title>
+<style>
+:root{
+  --fundo:#0b1020; --fundo2:#121a35; --texto:#e8ecf4; --suave:#9aa6c4; --linha:rgba(255,255,255,.09);
+  --azul:#4aa3ff; --verde:#3ddc97; --laranja:#ff9f43; --rosa:#ff5d8f; --amarelo:#ffd166;
+  --fonte:"Inter","Segoe UI","Helvetica Neue","Noto Sans",system-ui,-apple-system,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#05070f;color:var(--texto);font-family:var(--fonte);overflow:hidden}
+#palco{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;background:var(--fundo);overflow:hidden}
+.slide{position:absolute;inset:0;display:none;padding:84px 110px;
+  background:radial-gradient(1200px 700px at 85% 0%,var(--g1,rgba(74,163,255,.13)),transparent 60%),
+             radial-gradient(900px 600px at 0% 100%,var(--g2,rgba(255,93,143,.07)),transparent 60%),var(--fundo)}
+.slide.ativo{display:block;animation:entra .55s ease both}
+@keyframes entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.estatico .slide.ativo{animation:none}
+.c1{--cor:var(--azul);--g1:rgba(74,163,255,.16)} .c2{--cor:var(--verde);--g1:rgba(61,220,151,.14)}
+.c3{--cor:var(--laranja);--g1:rgba(255,159,67,.15)} .c4{--cor:var(--rosa);--g1:rgba(255,93,143,.15)}
+.c0{--cor:var(--amarelo)}
+.pt,.es{display:inline}
+body[data-lang=pt] .es{display:none} body[data-lang=es] .pt{display:none}
+.kicker{font-size:27px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--cor);display:flex;align-items:center;gap:16px}
+.kicker::before{content:"";width:46px;height:5px;border-radius:3px;background:var(--cor)}
+h1{font-size:92px;line-height:1.04;font-weight:800;letter-spacing:-.02em;margin-top:22px}
+h2{font-size:70px;line-height:1.06;font-weight:800;letter-spacing:-.015em;margin-top:20px}
+p.corpo{font-size:42px;line-height:1.38;color:var(--texto);margin-top:34px;max-width:900px}
+p.corpo b,.frase b,.destaque b{color:var(--cor);font-weight:700}
+.frag{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.frag.on{opacity:1;transform:none}
+.destaque{font-size:38px;line-height:1.35;margin-top:30px;max-width:900px;padding:22px 28px;border-left:6px solid var(--cor);
+  background:linear-gradient(90deg,rgba(255,255,255,.06),transparent);border-radius:0 18px 18px 0;color:#f2f5fb}
+.moldura{position:relative;border-radius:30px;overflow:hidden;background:var(--fundo);
+  border:1px solid var(--linha);box-shadow:0 0 0 1px rgba(255,255,255,.03),0 30px 80px rgba(0,0,0,.55),0 0 90px -20px var(--cor)}
+.moldura img{display:block;width:100%;height:auto}
+.moldura.menor{width:640px;margin:0 auto}
+.moldura.alto{width:680px;margin:0 auto}
+.legenda{font-size:27px;color:var(--suave);margin-top:20px;text-align:center}
+/* layouts */
+.split{display:grid;grid-template-columns:1fr 860px;gap:70px;height:100%;align-items:center}
+.split.inv{grid-template-columns:860px 1fr}
+.split .col-txt{align-self:center}
+.wide{display:flex;flex-direction:column;height:100%}
+.wide .topo{max-width:1500px}
+.wide .midia{margin:auto;display:flex;flex-direction:column;align-items:center;padding-top:20px}
+.wide .moldura{width:auto}
+.wide .moldura img{max-height:520px;width:auto;max-width:1660px}
+.wide .moldura.menor img{max-height:360px}
+.centro{display:flex;flex-direction:column;justify-content:center;height:100%}
+.frase{font-size:84px;line-height:1.16;font-weight:800;letter-spacing:-.02em;max-width:1500px;white-space:pre-line}
+.frase.m{font-size:70px}
+.sub{font-size:40px;color:var(--suave);margin-top:44px;max-width:1300px;line-height:1.4}
+.capa{display:flex;flex-direction:column;justify-content:center;height:100%;position:relative}
+.capa canvas{position:absolute;inset:-84px -110px;width:1920px;height:1080px;opacity:.85}
+.capa .conteudo{position:relative;z-index:2;margin-top:-150px}
+.capa h1{font-size:118px;background:linear-gradient(90deg,#fff,#bcd7ff 45%,var(--azul));-webkit-background-clip:text;background-clip:text;color:transparent}
+.capa .sub{margin-top:30px;color:#c9d3ec}
+.capa .autor{margin-top:70px;font-size:32px;color:var(--suave);letter-spacing:.08em}
+.formula{font-family:"Cambria Math","STIX Two Math","Noto Serif",Georgia,serif;font-size:74px;color:#fff;margin-top:34px;
+  padding:16px 34px;display:inline-block;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--linha)}
+.formula i{color:var(--cor)}
+.linha-t{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:70px}
+.cartao{padding:34px 32px 38px;border-radius:26px;background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border:1px solid var(--linha);position:relative}
+.cartao .ano{font-size:70px;font-weight:800;color:var(--cor);letter-spacing:-.02em}
+.cartao .tit{font-size:34px;font-weight:700;margin-top:8px}
+.cartao p{font-size:29px;line-height:1.35;color:#c6cfe6;margin-top:14px}
+.nota-nome{margin-top:40px;font-size:31px;color:#d7def0;display:flex;gap:18px;align-items:center}
+.nota-nome span.ico{font-size:46px}
+.refs{position:absolute;left:110px;right:110px;bottom:92px;font-size:21px;line-height:1.4;color:var(--suave);opacity:.9}
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:60px}
+.tres .cartao{padding:44px 38px 48px}
+.tres .cartao .ano{font-size:54px}
+.tres .cartao p{font-size:34px;color:#e0e6f6}
+.tres .cartao:nth-child(1){--cor:var(--azul)} .tres .cartao:nth-child(2){--cor:var(--verde)} .tres .cartao:nth-child(3){--cor:var(--rosa)}
+.tres .cartao b{color:var(--cor)}
+.comgif{margin-top:34px}.comgif .cartao{padding:26px 26px 30px;text-align:left}.comgif .gif{width:300px;height:300px;border-radius:16px;display:block;margin:0 auto 20px}.comgif .tit{font-size:36px;font-weight:700;color:var(--cor)}.comgif p{font-size:27px!important;line-height:1.3;margin-top:10px!important}
+.fim{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center}
+.fim h1{font-size:130px}
+.fim{position:relative}
+.ident{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:flex-end;z-index:3}
+.ident .placa{background:#fff;border-radius:20px;padding:18px 26px;line-height:0}
+.ident .placa img{height:130px;width:auto;display:block}
+.ident .ev{position:absolute;left:50%;bottom:0;transform:translateX(-50%)}
+.ident .fap{text-align:right}
+.ident .fap img{height:66px;width:auto;display:block;margin-left:auto}
+.ident .fap div{font-size:26px;color:#d7def0;margin-top:14px}
+/* interface */
+#barra{position:absolute;left:0;bottom:0;height:7px;background:linear-gradient(90deg,var(--azul),var(--verde),var(--laranja),var(--rosa));width:0;transition:width .35s ease;z-index:20}
+#contador{position:absolute;right:42px;bottom:26px;font-size:22px;color:var(--suave);z-index:20;letter-spacing:.08em}
+#idioma{position:absolute;left:42px;bottom:22px;z-index:20;display:flex;gap:6px}
+#idioma button{font:600 20px var(--fonte);padding:6px 16px;border-radius:999px;border:1px solid var(--linha);background:rgba(255,255,255,.05);color:var(--suave);cursor:pointer}
+body[data-lang=pt] #idioma .bpt, body[data-lang=es] #idioma .bes{background:var(--texto);color:var(--fundo);border-color:var(--texto)}
+#notas{position:absolute;left:0;right:0;bottom:0;max-height:320px;overflow:auto;padding:26px 60px 50px;background:rgba(5,7,15,.94);
+  font-size:27px;line-height:1.4;color:#d7def0;z-index:30;display:none;border-top:1px solid var(--linha)}
+#notas.on{display:block}
+#usp{position:absolute;top:20px;right:60px;height:52px;width:auto;z-index:5;opacity:.95}
+#ajuda{position:absolute;left:42px;top:30px;font-size:21px;color:var(--suave);z-index:20;opacity:.0;transition:opacity .4s}
+#ajuda.on{opacity:.9}
+</style>
+</head>
+<body data-lang="pt">
+<div id="palco">
+  <div id="slides"></div>
+  <img id="usp" src="media/usp_branco.png" alt="USP">
+  <div id="barra"></div><div id="contador"></div>
+  <div id="idioma"><button class="bpt" onclick="idioma('pt')">PT</button><button class="bes" onclick="idioma('es')">ES</button></div>
+  <div id="ajuda"><span class="pt">← → avançar · F tela cheia · L idioma · N notas</span><span class="es">← → avanzar · F pantalla completa · L idioma · N notas</span></div>
+  <div id="notas"></div>
+</div>
+
+<script>
+/* ---------- conteúdo ---------- */
+const b=(pt,es)=>`<span class="pt">${pt}</span><span class="es">${es}</span>`;
+const media=(arq,leg,extra='')=>`<div class="moldura ${extra}"><img data-src="media/${arq}" alt=""></div>${leg?`<div class="legenda">${leg}</div>`:''}`;
+const H=(txt)=>txt;
+const ident=()=>`<div class="ident"><div class="placa"><img src="media/ifsc_usp.jpg" alt="IFSC USP"></div>
+   <div class="placa ev"><img src="media/cicbed.jpg" alt="CICBED 2026"></div>
+   <div class="fap"><img src="media/fapesp_branco.png" alt="FAPESP"><div>${b('Processo FAPESP n.º 2024/14721-6','Proceso FAPESP n.º 2024/14721-6')}</div></div></div>`;
+
+const S=[
+/* 1 capa */
+{c:'c1',notas:b('Abertura. Deixe a animação de fundo rodar enquanto se apresenta.','Apertura. Deje correr la animación de fondo mientras se presenta.'),
+ html:()=>`<div class="capa"><canvas id="walkers"></canvas><div class="conteudo">
+   <div class="kicker c1">${b('Palestra','Charla')}</div>
+   <h1>${b('Como a Estatística<br>Vê o Mundo','Cómo la Estadística<br>Ve el Mundo')}</h1>
+   <div class="sub">${b('Simulando a realidade com métodos estatísticos','Simulando la realidad con métodos estadísticos')}</div>
+   <div class="autor">Artur Soares Rodrigues</div></div>${ident()}</div>`},
+/* 2 tese */
+{c:'c0',notas:b('A tese da palestra em uma frase. Voltamos a ela no final.','La tesis de la charla en una frase. Volvemos a ella al final.'),
+ html:()=>`<div class="centro"><div class="frase">${b('Dadas as regras de um sistema, podemos <b>simulá-lo</b> e <b>observá-lo</b>.','Dadas las reglas de un sistema, podemos <b>simularlo</b> y <b>observarlo</b>.')}</div>
+   <div class="sub frag">${b('Partindo de descrições determinísticas, podemos simular um sistema exatamente com métodos computacionais.','Partiendo de descripciones deterministas, podemos simular un sistema exactamente con métodos computacionales.')}</div></div>`},
+/* 3 */
+{c:'c1',html:()=>`<div class="centro"><div class="kicker" style="margin-bottom:40px">${b('1 · Regras exatas','1 · Reglas exactas')}</div>
+   <div class="frase">${b('Nós, físicos, tentamos simular as coisas a partir do que <b>entendemos</b> delas.','Nosotros, los físicos, intentamos simular las cosas a partir de lo que <b>entendemos</b> de ellas.')}</div></div>`},
+/* 4 solar */
+{c:'c1',notas:b('Três atos: planetas (Verlet, órbitas elípticas reais); a câmera se afasta e revela o cinturão e Júpiter; lapso de 100 mil anos com o histograma das distâncias dos asteroides. Linhas pontilhadas: ressonâncias 3:1, 5:2, 7:3 e 2:1. No modelo (plano, só Sol e Júpiter excêntrico, 2000 asteroides) surgem a lacuna 3:1 e uma faixa vazia perto de 2,75 UA (exagerada); 5:2 é parcial; 7:3 e 2:1 não aparecem. Frase-chave: mesma condição inicial, mesmo resultado.','Tres actos: planetas (Verlet, órbitas elípticas reales); la cámara se aleja y revela el cinturón y Júpiter; lapso de 100 mil años con el histograma de distancias de los asteroides. Líneas punteadas: resonancias 3:1, 5:2, 7:3 y 2:1. En el modelo (plano, solo Sol y Júpiter excéntrico, 2000 asteroides) aparecen la laguna 3:1 y una franja vacía cerca de 2,75 UA (exagerada); 5:2 es parcial; 7:3 y 2:1 no aparecen. Frase clave: misma condición inicial, mismo resultado.'),
+ html:()=>`<div class="split"><div class="col-txt"><div class="kicker">${b('1 · Regras exatas','1 · Reglas exactas')}</div>
+   <h2>${b('As leis de Newton','Las leyes de Newton')}</h2>
+   <p class="corpo">${b('Descrevem, de forma <b>determinística</b>, como alguns sistemas se comportam.','Describen, de forma <b>determinista</b>, cómo se comportan algunos sistemas.')}</p>
+   <div class="formula frag"><i>F</i> = <i>G</i> <i>M</i><i>m</i> / <i>r</i><sup>2</sup></div>
+   <div class="destaque frag">${b('Mesma condição inicial → <b>mesmo resultado</b>. Sempre.','Misma condición inicial → <b>mismo resultado</b>. Siempre.')}</div>
+   <div class="destaque frag">${b('Em 100 mil anos, Júpiter <b>esvazia faixas</b> do cinturão de asteroides.','En 100 mil años, Júpiter <b>vacía franjas</b> del cinturón de asteroides.')}</div></div>
+   <div>${media('01_sistema_solar.gif',b('Só a gravidade: planetas, o cinturão e as lacunas de Kirkwood','Solo la gravedad: planetas, el cinturón y las lagunas de Kirkwood'),'alto')}</div></div>`},
+/* 5 gás */
+{c:'c1',notas:b('Gás de Lennard-Jones 2D, 80 moléculas, esfriando. Cor = velocidade (laranja quente, azul frio); as caudas mostram o movimento. A curva embaixo é a fração em ordem triangular (6 vizinhos): chega a ~98%.','Gas de Lennard-Jones 2D, 80 moléculas, enfriándose. Color = velocidad (naranja caliente, azul frío); las colas muestran el movimiento. La curva de abajo es la fracción en orden triangular (6 vecinos): llega a ~98%.'),
+ html:()=>`<div class="split inv"><div>${media('02_gas_cristaliza.gif',b('Quente em laranja, frio em azul: as moléculas se organizam numa rede','Caliente en naranja, frío en azul: las moléculas se organizan en una red'),'alto')}</div>
+   <div class="col-txt"><div class="kicker">${b('1 · Regras exatas','1 · Reglas exactas')}</div>
+   <h2>${b('Muitos corpos, a mesma ideia','Muchos cuerpos, la misma idea')}</h2>
+   <p class="corpo">${b('Moléculas que se atraem e se repelem. Muitas vezes sem solução exata, mas aproximável por algoritmos.','Moléculas que se atraen y se repelen. Muchas veces sin solución exacta, pero aproximable por algoritmos.')}</p>
+   <div class="destaque frag">${b('Ao esfriar, a <b>ordem surge sozinha</b>, nascendo um cristal.','Al enfriarse, el <b>orden surge solo</b>, naciendo un cristal.')}</div></div></div>`},
+/* 6 transição */
+{c:'c2',html:()=>`<div class="centro"><div class="frase">${b('E se a regra for ainda <b>mais simples</b>?','¿Y si la regla es todavía <b>más simple</b>?')}</div></div>`},
+/* 7 autômatos */
+{c:'c2',notas:b('Regras 90 (Sierpinski), 30 (caótica) e 110 (complexa; universal). Cada célula olha 2 vizinhos e consulta uma tabela de 8 linhas.','Reglas 90 (Sierpinski), 30 (caótica) y 110 (compleja; universal). Cada celda mira 2 vecinas y consulta una tabla de 8 filas.'),
+ html:()=>`<div class="wide"><div class="topo"><div class="kicker">${b('2 · Regras simples','2 · Reglas simples')}</div>
+   <h2>${b('Autômatos celulares','Autómatas celulares')}</h2>
+   <p class="corpo" style="max-width:1500px;font-size:38px;margin-top:24px">${b('Uma linha de células, ligadas ou desligadas. Cada uma olha os <b>dois vizinhos</b> e segue uma tabela de 8 linhas.','Una fila de celdas, encendidas o apagadas. Cada una mira a sus <b>dos vecinas</b> y sigue una tabla de 8 filas.')}</p></div>
+   <div class="midia">${media('03_automatos_celulares.gif',b('Três tabelas, três mundos: um fractal, o caos e a complexidade','Tres tablas, tres mundos: un fractal, el caos y la complejidad'))}</div></div>`},
+/* 8 mundo real */
+{c:'c2',notas:b('Três usos científicos de autômatos celulares, simulados aqui de verdade. (1) Meio excitável (Greenberg-Hastings): ondas espirais como as da reação de Belousov-Zhabotinsky e as de modelos de tecido cardíaco. (2) Trânsito: modelo de Nagel-Schreckenberg (1992), um autômato celular de carros numa estrada circular (acelera, freia pela folga, distrai-se com p=0,3, anda); os aglomerados andam para trás. Verde = rápido, vermelho = parado. (3) Incêndio florestal (modelo de Drossel-Schwabl): árvores crescem e o fogo passa aos vizinhos; modelo simples de ecologia e de percolação. Se perguntarem o que significa a cor da espiral: claro = célula que acabou de disparar, escuro = em repouso. Aviso: alguns padrões de conchas lembram autômatos; é analogia, não prova de mecanismo.','Tres usos científicos clásicos de autómatas celulares, simulados aquí de verdad. (1) Medio excitable (Greenberg-Hastings): ondas espirales como las de la reacción de Belousov-Zhabotinsky y las de modelos de tejido cardíaco. (2) Tráfico: modelo de Nagel-Schreckenberg (1992), un autómata celular de autos en una ruta circular (acelera, frena según el espacio libre, se distrae con p=0,3, avanza); los atascos retroceden. Verde = rápido, rojo = detenido. (3) Incendio forestal (modelo de Drossel-Schwabl): los árboles crecen y el fuego pasa a los vecinos; modelo simple de ecología y percolación. Si preguntan qué significa el color de la espiral: claro = celda que acaba de disparar, oscuro = en reposo. Aviso: algunos patrones de conchas recuerdan autómatas; es analogía, no prueba de mecanismo.'),
+ html:()=>`<div class="centro"><div class="kicker">${b('2 · Regras simples','2 · Reglas simples')}</div>
+   <h2>${b('Autômatos celulares <b style="color:var(--verde)">na ciência</b>','Autómatas celulares <b style="color:var(--verde)">en la ciencia</b>')}</h2>
+   <div class="tres comgif">
+     <div class="cartao frag"><img class="gif" data-src="media/08a_espiral.gif" alt=""><div class="tit">${b('Ondas no coração','Ondas en el corazón')}</div><p>${b('Cada célula dispara, passa o sinal às vizinhas e <b>descansa</b>. Uma onda que gira sem parar é a base de certas <b>arritmias</b>.','Cada celda dispara, pasa la señal a las vecinas y <b>descansa</b>. Una onda que gira sin parar es la base de ciertas <b>arritmias</b>.')}</p></div>
+     <div class="cartao frag"><img class="gif" data-src="media/05_engarrafamento.gif" alt=""><div class="tit">${b('Trânsito','Tráfico')}</div><p>${b('Cada carro acelera, freia pela folga e às vezes se <b>distrai</b>. Sem acidente nem obra, surgem ondas de parada que <b>andam para trás</b>.','Cada auto acelera, frena según el espacio libre y a veces se <b>distrae</b>. Sin accidente ni obra, surgen ondas de parada que <b>retroceden</b>.')}</p></div>
+     <div class="cartao frag"><img class="gif" data-src="media/08c_fogo.gif" alt=""><div class="tit">${b('Incêndios florestais','Incendios forestales')}</div><p>${b('Árvores que crescem e pegam fogo dos vizinhos: um modelo simples de <b>ecologia</b> e de percolação.','Árboles que crecen y se prenden de los vecinos: un modelo simple de <b>ecología</b> y percolación.')}</p></div></div></div>`},
+/* 9 acaso */
+{c:'c3',html:()=>`<div class="centro"><div class="kicker" style="margin-bottom:40px">${b('3 · O acaso entra','3 · Entra el azar')}</div>
+   <div class="frase">${b('Mas o mundo também tem <b>acaso</b>.','Pero el mundo también tiene <b>azar</b>.')}</div>
+   <div class="sub frag">${b('Então algumas <b>regras</b> pedem sorteios.','Entonces algunas <b>reglas</b> piden sorteos.')}</div></div>`},
+/* 10 DLA */
+{c:'c3',notas:b('DLA: andarilhos aleatórios grudam num aglomerado. Aparece em depósito eletroquímico, cristais e colônias.','DLA: caminantes aleatorios se pegan a un agregado. Aparece en depósito electroquímico, cristales y colonias.'),
+ html:()=>`<div class="split"><div class="col-txt"><div class="kicker">${b('3 · O acaso entra','3 · Entra el azar')}</div>
+   <h2>${b('Crescer ao acaso','Crecer al azar')}</h2>
+   <p class="corpo">${b('Partículas andam <b>sem rumo</b>. Quando encostam, grudam.','Partículas caminan <b>sin rumbo</b>. Cuando tocan, se pegan.')}</p>
+   <div class="destaque frag">${b('Sai um <b>fractal</b> ramificado, como cristais, corais e depósitos metálicos.','Sale un <b>fractal</b> ramificado, como cristales, corales y depósitos metálicos.')}</div></div>
+   <div>${media('04_dla_fractal.gif',b('Cor: ordem de chegada das partículas','Color: orden de llegada de las partículas'))}</div></div>`},
+/* 12 epidemia */
+{c:'c3',notas:b('SIR em grade: probabilidade de contágio 0,35 por vizinho doente e de recuperação 0,12 por passo.','SIR en malla: probabilidad de contagio 0,35 por vecino enfermo y de recuperación 0,12 por paso.'),
+ html:()=>`<div class="split"><div class="col-txt"><div class="kicker">${b('3 · O acaso entra','3 · Entra el azar')}</div>
+   <h2>${b('Contágio é um sorteio','El contagio es un sorteo')}</h2>
+   <p class="corpo">${b('A cada encontro, uma <b>chance</b> de contágio e outra de recuperação.','En cada encuentro, una <b>probabilidad</b> de contagio y otra de recuperación.')}</p>
+   <div class="destaque frag">${b('A frente da epidemia avança como uma <b>onda</b>.','El frente de la epidemia avanza como una <b>onda</b>.')}</div></div>
+   <div>${media('06_epidemia.gif',b('Azul: saudável · Vermelho: doente · Verde: recuperado','Azul: sano · Rojo: enfermo · Verde: recuperado'))}</div></div>`},
+/* 12 percolação: vem da epidemia e do fogo */
+{c:'c3',notas:b('Ligação com o slide anterior (epidemia) e com os incêndios do slide 8: contágio e fogo só atravessam a população ou a floresta se houver um caminho de vizinhos ocupados. A percolação é a versão mais simples disso (sem dinâmica no tempo): sítios ocupados ao acaso. Grade 100×100, 4 vizinhos, contorno aberto. UMA única amostra de números aleatórios; o quadro mostra os sítios com sorteio menor que p, com p crescendo de 0,30 a 0,80 (por isso os ocupados só aumentam). Laranja = aglomerado que liga a linha de cima à de baixo. O limiar para sítios na rede quadrada é p_c ≈ 0,5927 (valor da literatura, ex. Stauffer e Aharony, Introduction to Percolation Theory; não conferido aqui na fonte). Semente 12 escolhida entre 24: a amostra passa a atravessar em p entre 0,55 e 0,62 conforme a semente; esta, em 0,594. Não diga que o aglomerado aparece sempre exatamente em p_c: numa grade finita o ponto de aparição flutua em torno dele. Aplicações clássicas, se perguntarem: condutividade de misturas condutor/isolante, fluxo em rochas porosas.','Conexión con el slide anterior (epidemia) y con los incendios del slide 8: contagio y fuego solo atraviesan la población o el bosque si hay un camino de vecinos ocupados. La percolación es la versión más simple de eso (sin dinámica en el tiempo): sitios ocupados al azar. Malla 100×100, 4 vecinos, borde abierto. UNA sola muestra de números aleatorios; el cuadro muestra los sitios con sorteo menor que p, con p creciendo de 0,30 a 0,80 (por eso los ocupados solo aumentan). Naranja = agregado que une la fila de arriba con la de abajo. El umbral para sitios en la red cuadrada es p_c ≈ 0,5927 (valor de la literatura, p. ej. Stauffer y Aharony, Introduction to Percolation Theory; no verificado aquí en la fuente). Semilla 12 elegida entre 24: la muestra empieza a atravesar en p entre 0,55 y 0,62 según la semilla; esta, en 0,594. No diga que el agregado aparece siempre exactamente en p_c: en una malla finita el punto de aparición fluctúa alrededor. Aplicaciones clásicas, si preguntan: conductividad de mezclas conductor/aislante, flujo en rocas porosas.'),
+ html:()=>`<div class="split"><div class="col-txt"><div class="kicker">${b('3 · O acaso entra','3 · Entra el azar')}</div>
+   <h2>${b('Percolação: existe um caminho?','Percolación: ¿existe un camino?')}</h2>
+   <p class="corpo">${b('Na epidemia e no incêndio, tudo depende de haver um <b>caminho</b> de vizinhos. Versão mais simples: cada quadradinho fica <b>ocupado</b> com probabilidade <i>p</i>, sorteado ao acaso. Existe um caminho do topo à base?','En la epidemia y en el incendio, todo depende de que haya un <b>camino</b> de vecinos. Versión más simple: cada cuadradito queda <b>ocupado</b> con probabilidad <i>p</i>, sorteado al azar. ¿Existe un camino de arriba a abajo?')}</p>
+   <div class="destaque frag">${b('Aumentando <i>p</i>, o aglomerado laranja <b>surge de repente</b>, perto de <i>p</i><sub>c</sub> ≈ 0,593 (marca amarela da barra).','Al aumentar <i>p</i>, el agregado naranja <b>aparece de repente</b>, cerca de <i>p</i><sub>c</sub> ≈ 0,593 (marca amarilla de la barra).')}</div></div>
+   <div>${media('06b_percolacao.gif',b('Azul: ocupado · Laranja: liga topo e base · Barra: p','Azul: ocupado · Naranja: une arriba y abajo · Barra: p'))}</div></div>`},
+
+/* 13 limiar = transição de fase, e ponte para Monte Carlo */
+{c:'c3',notas:b('Para cada p (0,40 a 0,80, passo 0,005) e cada largura L = 16, 32, 64, 128, 2000 grades independentes; a curva é a fração delas que tem caminho do topo à base. O erro estatístico é de ~1 pt percentual (2000 amostras), por isso o leve serrilhado. Todas as curvas passam por P ≈ 0,5 em p ≈ 0,592 a 0,593 (medido: 0,5922 a 0,5927 conforme L), coerente com p_c ≈ 0,5927. Quanto maior L, mais abrupta: no limite de grade infinita seria um degrau. Transição de fase: um parâmetro (aqui p) varia pouco a pouco e, numa faixa estreita, o comportamento muda. Exemplos: água congelando a 0 °C a 1 atm (primeira ordem, com calor latente); ímã de ferro perdendo a magnetização acima de ~770 °C, o ponto de Curie (segunda ordem, contínua); a percolação é contínua, como a de Curie. Não precisa entrar na diferença entre as ordens; se perguntarem: na primeira há salto e coexistência de fases, na segunda não. Ponte: a curva foi obtida sorteando 2000 grades por ponto, ou seja, é um cálculo de Monte Carlo (média sobre sorteios).','Para cada p (0,40 a 0,80, paso 0,005) y cada ancho L = 16, 32, 64, 128, 2000 mallas independientes; la curva es la fracción de ellas con camino de arriba a abajo. El error estadístico es de ~1 punto porcentual (2000 muestras), por eso el leve serrucho. Todas las curvas pasan por P ≈ 0,5 en p ≈ 0,592 a 0,593 (medido: 0,5922 a 0,5927 según L), coherente con p_c ≈ 0,5927. Cuanto mayor L, más abrupta: en el límite de malla infinita sería un escalón. Transición de fase: un parámetro (aquí p) varía poco a poco y, en una franja estrecha, el comportamiento cambia. Ejemplos: agua congelándose a 0 °C a 1 atm (primer orden, con calor latente); imán de hierro perdiendo la magnetización por encima de ~770 °C, el punto de Curie (segundo orden, continua); la percolación es continua, como la de Curie. No hace falta entrar en la diferencia entre órdenes; si preguntan: en la primera hay salto y coexistencia de fases, en la segunda no. Puente: la curva se obtuvo sorteando 2000 mallas por punto, es decir, es un cálculo de Monte Carlo (promedio sobre sorteos).'),
+ html:()=>`<div class="split"><div class="col-txt"><div class="kicker">${b('3 · O acaso entra','3 · Entra el azar')}</div>
+   <h2>${b('Um limiar nítido: transição de fase','Un umbral nítido: transición de fase')}</h2>
+   <p class="corpo">${b('Para cada <i>p</i>, sorteamos <b>milhares de grades</b> e contamos quantas têm caminho. Quanto <b>maior</b> a grade, mais <b>abrupta</b> a passagem.','Para cada <i>p</i>, sorteamos <b>miles de mallas</b> y contamos cuántas tienen camino. Cuanto <b>mayor</b> la malla, más <b>abrupto</b> el paso.')}</p>
+   <div class="destaque frag" style="font-size:31px">${b('O comportamento <b>muda</b> numa faixa estreita de <i>p</i>: uma <b>transição de fase</b>, como a água que congela ou o ímã que perde a magnetização.','El comportamiento <b>cambia</b> en una franja estrecha de <i>p</i>: una <b>transición de fase</b>, como el agua que se congela o el imán que pierde la magnetización.')}</div>
+   <div class="destaque frag" style="margin-top:20px;font-size:31px">${b('Medimos a curva <b>sorteando muitas grades</b>: é <b>Monte Carlo</b>, o próximo tema.','Medimos la curva <b>sorteando muchas mallas</b>: es <b>Monte Carlo</b>, el próximo tema.')}</div></div>
+   <div>${media('06c_percolacao_atravessa.png',b('Eixo vertical: probabilidade de existir caminho · Linha amarela: p<sub>c</sub> · L: largura da grade, em sítios','Eje vertical: probabilidad de que exista camino · Línea amarilla: p<sub>c</sub> · L: ancho de la malla, en sitios'))}</div></div>`},
+
+/* 13 Monte Carlo */
+{c:'c4',notas:b('Ideia central: em Monte Carlo o acaso é o instrumento, não uma propriedade do sistema. O problema pode ser determinístico (π, uma integral, uma média de Boltzmann) ou estocástico (transporte de nêutrons, em que cada colisão é probabilística). Nos slides 10 e 12 (DLA, epidemia) o sorteio faz parte da regra do modelo; aqui ele vira uma ferramenta de cálculo. O próximo exemplo é o π, que não tem acaso nenhum.','Idea central: en Monte Carlo el azar es el instrumento, no una propiedad del sistema. El problema puede ser determinista (π, una integral, un promedio de Boltzmann) o estocástico (transporte de neutrones, donde cada colisión es probabilística). En las diapositivas 10 y 12 (DLA, epidemia) el sorteo es parte de la regla del modelo; aquí pasa a ser una herramienta de cálculo. El próximo ejemplo es π, que no tiene azar alguno.'),
+ html:()=>`<div class="centro"><div class="kicker" style="margin-bottom:40px">${b('4 · Monte Carlo','4 · Monte Carlo')}</div>
+   <div class="frase m">${b('O acaso também pode ser uma <b>ferramenta</b>: sortear para calcular, mesmo quando o problema não tem acaso nenhum. É o <b>método de Monte Carlo</b>.','El azar también puede ser una <b>herramienta</b>: sortear para calcular, incluso cuando el problema no tiene azar alguno. Es el <b>método de Monte Carlo</b>.')}</div></div>`},
+/* 14 Los Alamos */
+{c:'c4',notas:b('Fontes: N. Metropolis & S. Ulam, J. Am. Stat. Assoc. 44, 335 (1949); N. Metropolis, "The Beginning of the Monte Carlo Method", Los Alamos Science 15 (1987) 125–130; R. Eckhardt, "Stan Ulam, John von Neumann, and the Monte Carlo Method", Los Alamos Science 15 (1987) 131. Conferido nessas fontes: (1) a pergunta da paciência (Canfield) é de Ulam, em 1946, convalescendo de uma doença; Eckhardt cita as palavras de Ulam, de 1983. (2) O nome foi sugerido por Metropolis, ligado a um tio de Ulam que pedia dinheiro emprestado porque "precisava ir a Monte Carlo" (Metropolis 1987); a história é contada assim, mas é pouco documentada além disso. (3) Fermi: segundo Segrè, citado por Metropolis, Fermi inventou (sem nomear nem publicar) o método em Roma, no início dos anos 1930. (4) O ENIAC foi o primeiro teste ambicioso do método (Metropolis 1987). ATENÇÃO: o ano 1948 do cartão do ENIAC não foi confirmado nesse texto, que só diz que o teste veio depois da mudança do ENIAC, no fim de 1947; confirme antes de dizer. A ideia de Ulam é de 1946, logo após a guerra, mas nasce do ambiente do Projeto Manhattan.','Fuentes: N. Metropolis y S. Ulam, J. Am. Stat. Assoc. 44, 335 (1949); N. Metropolis, "The Beginning of the Monte Carlo Method", Los Alamos Science 15 (1987) 125–130; R. Eckhardt, "Stan Ulam, John von Neumann, and the Monte Carlo Method", Los Alamos Science 15 (1987) 131. Verificado en esas fuentes: (1) la pregunta del solitario (Canfield) es de Ulam, en 1946, convaleciendo de una enfermedad; Eckhardt cita las palabras de Ulam, de 1983. (2) El nombre lo sugirió Metropolis, ligado a un tío de Ulam que pedía dinero prestado porque "tenía que ir a Monte Carlo" (Metropolis 1987); la historia se cuenta así, pero está poco documentada más allá de eso. (3) Fermi: según Segrè, citado por Metropolis, Fermi inventó (sin nombrarlo ni publicarlo) el método en Roma, a principios de los años 1930. (4) El ENIAC fue la primera prueba ambiciosa del método (Metropolis 1987). ATENCIÓN: el año 1948 de la tarjeta del ENIAC no se confirmó en ese texto, que solo dice que la prueba vino después del traslado del ENIAC, a fines de 1947; confírmelo antes de decirlo. La idea de Ulam es de 1946, justo después de la guerra, pero nace del ambiente del Proyecto Manhattan.'),
+ html:()=>`<div class="centro"><div class="kicker">${b('4 · De onde veio','4 · De dónde vino')}</div>
+   <h2>${b('Los Alamos, depois da guerra','Los Álamos, después de la guerra')}</h2>
+   <div class="sub" style="margin-top:18px;font-size:32px">${b('No ambiente do Projeto Manhattan: a ideia surge em 1946, logo após a Segunda Guerra.','En el ambiente del Proyecto Manhattan: la idea surge en 1946, justo después de la Segunda Guerra.')}</div>
+   <div class="linha-t">
+     <div class="cartao frag"><div class="ano">1946</div><div class="tit">Stanislaw Ulam</div><p>${b('Joga paciência e se pergunta: qual a chance de ganhar? Contar jogos é mais fácil que calcular.','Juega solitario y se pregunta: ¿cuál es la probabilidad de ganar? Contar partidas es más fácil que calcular.')}</p></div>
+     <div class="cartao frag"><div class="ano">1947</div><div class="tit">John von Neumann</div><p>${b('Vê que o mesmo vale para os nêutrons dentro da matéria e planeja os cálculos.','Ve que lo mismo vale para los neutrones dentro de la materia y planifica los cálculos.')}</p></div>
+     <div class="cartao frag"><div class="ano">1948</div><div class="tit">ENIAC</div><p>${b('Primeiras rodadas num computador eletrônico.','Primeras corridas en una computadora electrónica.')}</p></div>
+     <div class="cartao frag"><div class="ano">1949</div><div class="tit">Metropolis & Ulam</div><p>${b('Publicam <i>The Monte Carlo Method</i>.','Publican <i>The Monte Carlo Method</i>.')}</p></div></div>
+   <div class="nota-nome frag"><span class="ico">🎲</span><span>${b('O nome vem do <b>cassino de Mônaco</b>, onde o tio de Ulam jogava, segundo a história mais contada.','El nombre viene del <b>casino de Mónaco</b>, donde jugaba el tío de Ulam, según la historia más contada.')}</span></div>
+   <div class="refs">${b('Fontes','Fuentes')}: N. Metropolis & S. Ulam, <i>J. Am. Stat. Assoc.</i> 44, 335 (1949) · N. Metropolis, <i>Los Alamos Science</i> 15, 125 (1987) · R. Eckhardt, <i>Los Alamos Science</i> 15, 131 (1987)</div></div>`},
+/* 15 π histórico */
+{c:'c4',notas:b('Fontes: Buffon, Essai d’arithmétique morale (1777, suplemento da Histoire naturelle, vol. 4); É. Barbier, J. Math. Pures Appl. (2) 5, 273–286 (1860); L. Badger, "Lazzarini’s Lucky Approximation of π", Math. Mag. 67, 83–91 (1994); N. Metropolis, Los Alamos Science 15 (1987) 125–130. Verificado: Buffon propôs o problema da agulha no século XVIII; Barbier deu a solução em 1860; Lazzarini (1901) relatou 355/113 com 3408 lançamentos, resultado considerado suspeito (Badger o chama de aproximação "de sorte"). O periódico, o volume e as páginas do artigo original de Lazzarini NÃO foram confirmados em fonte primária. A afirmação de que vários artigos calcularam π por Monte Carlo logo nos anos 1940 NÃO foi verificada: confirme antes de dizer.','Fuentes: Buffon, Essai d’arithmétique morale (1777, suplemento de la Histoire naturelle, vol. 4); É. Barbier, J. Math. Pures Appl. (2) 5, 273–286 (1860); L. Badger, "Lazzarini’s Lucky Approximation of π", Math. Mag. 67, 83–91 (1994); N. Metropolis, Los Alamos Science 15 (1987) 125–130. Verificado: Buffon planteó el problema de la aguja en el siglo XVIII; Barbier dio la solución en 1860; Lazzarini (1901) informó 355/113 con 3408 lanzamientos, resultado considerado sospechoso (Badger lo llama una aproximación "con suerte"). La revista, el volumen y las páginas del artículo original de Lazzarini NO se confirmaron en una fuente primaria. La afirmación de que varios artículos calcularon π por Monte Carlo ya en los años 40 NO fue verificada: confírmela antes de decirla.'),
+ html:()=>`<div class="centro"><div class="kicker">${b('4 · Monte Carlo','4 · Monte Carlo')}</div>
+   <h2>${b('π ao acaso, antes dos computadores','π al azar, antes de las computadoras')}</h2>
+   <div class="linha-t" style="grid-template-columns:repeat(3,1fr)">
+     <div class="cartao frag"><div class="ano">séc. XVIII</div><div class="tit">${b('Agulha de Buffon','Aguja de Buffon')}</div><p>${b('Jogar agulhas sobre um piso de tábuas: a fração que cruza uma fresta depende de π.','Lanzar agujas sobre un piso de tablas: la fracción que cruza una junta depende de π.')}</p></div>
+     <div class="cartao frag"><div class="ano">1901</div><div class="tit">Lazzarini</div><p>${b('Relata 355/113 com 3.408 lançamentos. Um resultado bom demais, que muitos consideram ajustado.','Informa 355/113 con 3.408 lanzamientos. Un resultado demasiado bueno, que muchos consideran ajustado.')}</p></div>
+     <div class="cartao frag"><div class="ano">1940s</div><div class="tit">${b('Com computadores','Con computadoras')}</div><p>${b('Com o ENIAC e seus sucessores, o método passa a rodar em escala.','Con el ENIAC y sus sucesores, el método pasa a correr a gran escala.')}</p></div></div>
+   <div class="refs">${b('Fontes','Fuentes')}: Buffon, <i>Essai d'arithmétique morale</i> (1777) · É. Barbier, <i>J. Math. Pures Appl.</i> (2) 5, 273 (1860) · L. Badger, <i>Math. Mag.</i> 67, 83 (1994), ${b('sobre Lazzarini','sobre Lazzarini')} · N. Metropolis, <i>Los Alamos Science</i> 15, 125 (1987)</div></div>`},
+/* 15b agulha de Buffon */
+{c:'c4',notas:b('Agulha de comprimento igual ao espaçamento das frestas: a probabilidade de cruzar é 2/π (≈64%). Logo π ≈ 2 × lançamentos / cruzamentos. A animação usa 250 agulhas (semente fixa, escolhida entre 12 sementes, uma simulação real; com 250 agulhas π varia de 3,09 a 3,50 entre sementes; o resultado final, 3,11, é típico do erro de ~1/√N).','Aguja de longitud igual al espaciado de las juntas: la probabilidad de cruzar es 2/π (≈64%). Entonces π ≈ 2 × lanzamientos / cruces. La animación usa 250 agujas (semilla fija, elegida entre 12 semillas, una simulación real; con 250 agujas π varía de 3,09 a 3,50 según la semilla; el resultado final, 3,11, es típico del error de ~1/√N).'),
+ html:()=>`<div class="wide"><div class="topo"><div class="kicker">${b('4 · Monte Carlo','4 · Monte Carlo')}</div>
+   <h2>${b('A agulha de Buffon','La aguja de Buffon')}</h2>
+   <p class="corpo" style="max-width:1500px;font-size:38px;margin-top:24px">${b('Jogue agulhas num piso de tábuas. <b style="color:var(--laranja)">Cruzou uma fresta</b>: laranja. A fração que cruza vale <b>2/π</b>.','Lance agujas sobre un piso de tablas. <b style="color:var(--laranja)">Cruzó una junta</b>: naranja. La fracción que cruza vale <b>2/π</b>.')}</p></div>
+   <div class="midia">${media('07b_buffon.gif',b('Cada agulha é um sorteio; a conta dos cruzamentos aproxima π','Cada aguja es un sorteo; la cuenta de los cruces aproxima π'))}</div></div>`},
+/* 16 π */
+{c:'c4',notas:b('Erro ~ 1/raiz(N): cada casa decimal a mais custa 100x mais pontos.','Error ~ 1/raíz(N): cada decimal más cuesta 100 veces más puntos.'),
+ html:()=>`<div class="wide"><div class="topo"><div class="kicker">${b('4 · Monte Carlo','4 · Monte Carlo')}</div>
+   <h2>${b('Calculando π com dardos','Calculando π con dardos')}</h2>
+   <p class="corpo" style="max-width:1500px;font-size:38px;margin-top:24px">${b('Jogue pontos <b>ao acaso</b> num quadrado. A fração que cai no quarto de círculo vale <b>π/4</b>.','Lance puntos <b>al azar</b> en un cuadrado. La fracción que cae en el cuarto de círculo vale <b>π/4</b>.')}</p></div>
+   <div class="midia">${media('07_pi_dardos.gif',b('Mais pontos, melhor a estimativa: o erro cai como 1/√N','Más puntos, mejor la estimación: el error cae como 1/√N'))}</div></div>`},
+/* 17b amostragem por importância (MCMC) */
+{c:'c4',notas:b('Ponte entre os dardos (sorteio uniforme, sem distribuição) e o Monte Carlo por cadeia de Markov (MCMC). Ideia: quase todas as configurações têm peso e^{-E/T} desprezível; o valor médio vem de uma região minúscula. Sorteio uniforme desperdiça quase tudo (aqui, 9% dos pontos caem na região relevante). Metropolis sorteia cada configuração com probabilidade proporcional ao peso de Boltzmann: a distribuição é exatamente a das regras do sistema, sem aproximação de modelo. Ressalvas honestas: os pontos de Metropolis são correlacionados (um depende do anterior) e os primeiros passos, antes de chegar à região, são descartados (a cauda cinza no canto). Os números dessa figura: 9% uniforme contra 95% na segunda metade da cadeia. Dimensão: fração de um cubo [-1,1]^d ocupada pela bola unitária = pi^(d/2)/(Gamma(d/2+1) 2^d): 78,5% (d=2), 0,249% (d=10), 2,5e-8 (d=20).','Puente entre los dardos (sorteo uniforme, sin distribución) y el Monte Carlo por cadena de Markov (MCMC). Idea: casi todas las configuraciones tienen peso e^{-E/T} despreciable; el promedio viene de una región diminuta. El sorteo uniforme desperdicia casi todo (aquí, 9% de los puntos caen en la región relevante). Metropolis sortea cada configuración con probabilidad proporcional al peso de Boltzmann: la distribución es exactamente la de las reglas del sistema, sin aproximar el modelo. Salvedades honestas: los puntos de Metropolis están correlacionados (uno depende del anterior) y los primeros pasos, antes de llegar a la región, se descartan (la cola gris en la esquina). Números de esta figura: 9% uniforme contra 95% en la segunda mitad de la cadena. Dimensión: fracción de un cubo [-1,1]^d ocupada por la bola unitaria = pi^(d/2)/(Gamma(d/2+1) 2^d): 78,5% (d=2), 0,249% (d=10), 2,5e-8 (d=20).'),
+ html:()=>`<div class="wide"><div class="topo"><div class="kicker">${b('Do π ao Monte Carlo de verdade','Del π al Monte Carlo de verdad')}</div>
+   <h2>${b('Sortear <b style="color:var(--laranja)">onde importa</b>','Sortear <b style="color:var(--laranja)">donde importa</b>')}</h2>
+   <p class="corpo" style="max-width:1500px;font-size:36px;margin-top:22px">${b('Nos dardos, sorteamos <b>sem distribuição nenhuma</b> (esquerda). Num sistema físico, sorteamos cada configuração com probabilidade <b>proporcional ao seu peso</b> (direita). A distribuição <b>exata</b> das regras é sorteada usando uma <b>cadeia de Markov</b>.','En los dardos, sorteamos <b>sin ninguna distribución</b> (izquierda). En un sistema físico, sorteamos cada configuración con probabilidad <b>proporcional a su peso</b> (derecha). La distribución <b>exacta</b> de las reglas se sortea usando una <b>cadena de Markov</b>.')}</p></div>
+   <div class="midia">${media('07c_importancia.gif',b('Laranja: pontos na região que de fato importa','Naranja: puntos en la región que realmente importa'),'menor')}</div>
+   <div class="destaque frag" style="max-width:1500px;margin:18px auto 0;font-size:30px">${b('Quanto <b>maior a dimensão</b>, maior a vantagem: numa bola dentro de um cubo, o sorteio uniforme acerta <b>79%</b> em 2D, <b>0,25%</b> em 10D e <b>0,0000025%</b> em 20D.','Cuanto <b>mayor la dimensión</b>, mayor la ventaja: en una bola dentro de un cubo, el sorteo uniforme acierta <b>79%</b> en 2D, <b>0,25%</b> en 10D y <b>0,0000025%</b> en 20D.')}</div></div>`},
+/* 17 Galton */
+{c:'c4',notas:b('Soma de escolhas independentes → binomial → normal (teorema central do limite).','Suma de elecciones independientes → binomial → normal (teorema central del límite).'),
+ html:()=>`<div class="split inv"><div>${media('08_galton.gif',b('260 bolinhas, 12 fileiras de pregos','260 bolitas, 12 filas de clavos'))}</div>
+   <div class="col-txt"><div class="kicker">${b('4 · Monte Carlo','4 · Monte Carlo')}</div>
+   <h2>${b('Somar escolhas','Sumar elecciones')}</h2>
+   <p class="corpo">${b('Cada bolinha vai para a esquerda ou para a direita, <b>na sorte</b>.','Cada bolita va a la izquierda o a la derecha, <b>al azar</b>.')}</p>
+   <div class="destaque frag">${b('A pilha desenha sempre a mesma curva: a <b>normal</b>. É estatística em ação.','La pila dibuja siempre la misma curva: la <b>normal</b>. Es estadística en acción.')}</div></div></div>`},
+/* 18 muitos graus de liberdade */
+{c:'c4',notas:b('Correção de enquadramento: Monte Carlo NÃO precisa conhecer menos do sistema; precisa da mesma hamiltoniana. A questão é custo: com muitos graus de liberdade nem a soma exata nem a dinâmica completa cabem no tempo disponível. Exemplo: Potts 16×16 com q=10 tem 10^256 configurações. O erro do Monte Carlo cai como 1/raiz(N) qualquer que seja a dimensão. Nuance: o MC dá médias de equilíbrio, não a trajetória no tempo.','Corrección de enfoque: Monte Carlo NO necesita conocer menos del sistema; necesita el mismo hamiltoniano. La cuestión es el costo: con muchos grados de libertad ni la suma exacta ni la dinámica completa caben en el tiempo disponible. Ejemplo: Potts 16×16 con q=10 tiene 10^256 configuraciones. El error de Monte Carlo cae como 1/raíz(N) sea cual sea la dimensión. Matiz: el MC da promedios de equilibrio, no la trayectoria en el tiempo.'),
+ html:()=>`<div class="centro"><div class="kicker">${b('Em resumo','En resumen')}</div>
+   <h2>${b('Muitos graus de liberdade: o <b style="color:var(--rosa)">acaso</b> encurta o caminho','Muchos grados de libertad: el <b style="color:var(--rosa)">azar</b> acorta el camino')}</h2>
+   <div class="tres">
+     <div class="cartao frag"><div class="ano">${b('Somar tudo','Sumar todo')}</div><p>${b('Um reticulado 16×16 com 10 estados por sítio tem <b>10<sup>256</sup></b> configurações.','Una red 16×16 con 10 estados por sitio tiene <b>10<sup>256</sup></b> configuraciones.')}</p></div>
+     <div class="cartao frag"><div class="ano">${b('Seguir cada parte','Seguir cada parte')}</div><p>${b('Num grão de matéria há <b>~10<sup>23</sup></b> partículas para acompanhar no tempo.','En un grano de materia hay <b>~10<sup>23</sup></b> partículas que seguir en el tiempo.')}</p></div>
+     <div class="cartao frag"><div class="ano">Monte Carlo</div><p>${b('Sorteia <b>poucos milhares</b> de configurações típicas. O erro cai como 1/√N, <b>qualquer</b> que seja o tamanho do sistema.','Sortea <b>pocos miles</b> de configuraciones típicas. El error cae como 1/√N, <b>sea cual sea</b> el tamaño del sistema.')}</p></div></div>
+   <div class="destaque frag" style="max-width:1500px;margin-top:50px;font-size:44px">${b('As <b>mesmas regras</b>. O acaso só encurta o caminho até as médias.','Las <b>mismas reglas</b>. El azar solo acorta el camino hasta los promedios.')}</div></div>`},
+/* 19 final */
+{c:'c0',html:()=>`<div class="centro"><div class="frase">${b('Dadas as regras de um sistema, podemos <b>simulá-lo</b> e <b>observá-lo</b>.','Dadas las reglas de un sistema, podemos <b>simularlo</b> y <b>observarlo</b>.')}</div>
+   <div class="sub frag">${b('E quando são graus de liberdade demais para calcular, <b style="color:var(--amarelo)">o acaso ajuda</b>.','Y cuando son demasiados grados de libertad para calcular, <b style="color:var(--amarelo)">el azar ayuda</b>.')}</div></div>`},
+/* 20 fim */
+{c:'c1',html:()=>`<div class="fim"><h1>${b('Obrigado!','¡Gracias!')}</h1><div class="sub">${b('Perguntas?','¿Preguntas?')}</div>${ident()}</div>`}
+];
+
+/* ---------- motor ---------- */
+const raiz=document.getElementById('slides'), palco=document.getElementById('palco');
+S.forEach((s,i)=>{const d=document.createElement('section');d.className='slide '+s.c;d.innerHTML=s.html();raiz.appendChild(d);s.el=d;s.frags=[...d.querySelectorAll('.frag')];});
+let atual=0, passo=0;
+const barra=document.getElementById('barra'), contador=document.getElementById('contador'), notas=document.getElementById('notas');
+function mostra(i,fim){
+  if(i<0||i>=S.length)return;
+  S[atual].el.classList.remove('ativo'); S[atual].el.querySelectorAll('img[data-src]').forEach(m=>m.removeAttribute('src'));
+  atual=i; const s=S[i]; s.el.classList.add('ativo');
+  s.el.querySelectorAll('img[data-src]').forEach(m=>{m.src='';m.src=m.dataset.src;});
+  passo=fim?s.frags.length:0; s.frags.forEach((f,k)=>f.classList.toggle('on',k<passo));
+  barra.style.width=(100*(i+1)/S.length)+'%'; contador.textContent=(i+1)+' / '+S.length;
+  notas.innerHTML=s.notas||''; if(window.canvasOn) window.canvasOn(i===0);
+  history.replaceState(null,'','#'+(i+1));
+}
+function proximo(){const s=S[atual]; if(passo<s.frags.length){s.frags[passo].classList.add('on');passo++;} else mostra(atual+1);}
+function anterior(){const s=S[atual]; if(passo>0){passo--;s.frags[passo].classList.remove('on');} else mostra(atual-1,true);}
+function idioma(l){document.body.dataset.lang=l;document.documentElement.lang=l;try{localStorage.setItem('lang',l)}catch(e){}}
+function tela(){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{});}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();proximo();}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();anterior();}
+  else if(e.key==='Home')mostra(0); else if(e.key==='End')mostra(S.length-1);
+  else if(e.key==='f'||e.key==='F')tela(); else if(e.key==='l'||e.key==='L')idioma(document.body.dataset.lang==='pt'?'es':'pt');
+  else if(e.key==='n'||e.key==='N')notas.classList.toggle('on');
+});
+addEventListener('click',e=>{if(e.target.closest('#idioma'))return; (e.clientX<innerWidth*0.22)?anterior():proximo();});
+let x0=null; addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)(dx<0?proximo():anterior());x0=null;});
+function ajusta(){const k=Math.min(innerWidth/1920,innerHeight/1080);palco.style.transform=`translate(${(innerWidth-1920*k)/2}px,${(innerHeight-1080*k)/2}px) scale(${k})`;}
+addEventListener('resize',ajusta); ajusta();
+try{const l=localStorage.getItem('lang'); if(l)idioma(l);}catch(e){}
+if(/[?&]es\b/.test(location.search))idioma('es');
+const ajuda=document.getElementById('ajuda'); setTimeout(()=>ajuda.classList.add('on'),600); setTimeout(()=>ajuda.classList.remove('on'),6500);
+/* fundo da capa: andarilhos aleatórios */
+(function(){
+  const cv=document.getElementById('walkers'); if(!cv)return; const c=cv.getContext('2d'); cv.width=1920; cv.height=1080;
+  const N=70, P=[...Array(N)].map(()=>({x:Math.random()*1920,y:Math.random()*1080,h:[],c:['#4aa3ff','#3ddc97','#ff9f43','#ff5d8f'][Math.floor(Math.random()*4)]}));
+  let on=true;
+  function passo(){
+    if(on){ c.fillStyle='rgba(11,16,32,.12)'; c.fillRect(0,0,1920,1080);
+      for(const p of P){ const a=Math.random()*Math.PI*2, d=9; const nx=p.x+Math.cos(a)*d, ny=p.y+Math.sin(a)*d;
+        c.strokeStyle=p.c; c.globalAlpha=.55; c.lineWidth=2; c.beginPath(); c.moveTo(p.x,p.y); c.lineTo(nx,ny); c.stroke();
+        p.x=(nx+1920)%1920; p.y=(ny+1080)%1080; } c.globalAlpha=1; }
+    requestAnimationFrame(passo);
+  }
+  window.canvasOn=v=>{on=v; if(v){c.fillStyle='#0b1020';c.fillRect(0,0,1920,1080);}};
+  passo();
+})();
+const inicio=parseInt(location.hash.slice(1))||1; mostra(Math.min(Math.max(inicio,1),S.length)-1);
+if(/frags/.test(location.search)) document.body.classList.add('estatico');
+if(/frags/.test(location.search)) document.querySelectorAll('.frag').forEach(f=>{f.style.transition='none';f.classList.add('on');});
+</script>
+</body>
+</html>
